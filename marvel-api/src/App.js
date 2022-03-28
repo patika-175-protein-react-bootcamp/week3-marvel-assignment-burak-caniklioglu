@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import first_image from './images/all.png'; //back
+import first_image from './images/all.png'; //background image
 
 function App() {
     return (
@@ -32,6 +32,12 @@ function App() {
                         </defs>
                     </svg>
                 
+                </div>
+            </div>
+
+            <div id='image-area'>
+                <div className="container">
+                    
                 </div>
             </div>
         </div>

@@ -26,6 +26,18 @@ body{
   filter: drop-shadow(0px 4px 4px rgba(255, 255, 255, 0.25));
 }
 
+#image-area{
+  margin:357px  auto 90px auto;
+  max-width: 65%;
+}
+
+.container{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: center;
+}
+
 /*view on phone */
 @media screen and (max-width : 576px){
   #logo-image img{
@@ -60,6 +72,9 @@ body{
       width: 200px;
       height: 90px;
   }
+  #image-area{
+    max-width: 100%;
+  }
 }
 
 /*view on tablet */
@@ -78,6 +93,9 @@ body{
   #logo-lg svg{
       width: 360px;
       height: 120px;
+  }
+  #image-area{
+    max-width: 95%;
   }
 }
 
@@ -98,6 +116,9 @@ body{
       width: 450px;
       height: 180px;
   }
+  #image-area{
+    max-width: 85%;
+  } 
 }
 
 /*view on large-desktop */
@@ -116,5 +137,8 @@ body{
   #logo-lg svg{
       width: 600px;
       height: 200px;
+  }
+  #image-area{
+    max-width: 85%;
   }
 }
