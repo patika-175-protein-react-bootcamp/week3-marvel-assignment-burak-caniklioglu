@@ -1,8 +1,39 @@
-import React from 'react';
+
+import React, {useState, useEffect} from 'react';
 import './App.css';
 import first_image from './images/all.png'; //background image
+import axios from 'axios';
+
+const hash= '0b3b8996d2019d3f5e64dfcc68f7e757';
 
 function App() {
+
+    const [card, setCard] = useState([]);
+
+    const [loading, setLoading] = useState(true);
+
+    const [skip, setSkip] = useState(0);
+
+    useEffect(() => {
+        getData();
+        setLoading(false);
+    } , [skip]);
+
+    const getData = async () => {
+        try {
+            const response = await axios.get(`http://gateway.marvel.com/v1/public/characters?limit=20&offset=${skip * 20}&ts=1&apikey=75ff82aee4aef7e1bdb522eea36271d4&hash=${hash}`);
+            console.log(response.data.data.results);
+            setCard(response.data.data.results);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const newData = () => {
+        setSkip(x => x + 1);
+    };
+
+
     return (
         <div className="App">
             <div className='logo-all'>
@@ -37,7 +68,28 @@ function App() {
 
             <div id='image-area'>
                 <div className="container">
+
                     
+
+                    {
+                        card.map((item) => {
+                            return (
+                                <div className="cards" key={item.id}>
+                                    <div className="card-container">
+                                        <div className="card">
+                                            <img src={item.thumbnail.path + '/portrait_incredible.' + item.thumbnail.extension} alt={item.name}/>
+                                        </div>
+                                    </div>
+                                    <p>{item.name}</p>
+                                </div>
+                            );})
+                    }
+
+                    <button onClick={newData}>Data Çek</button>
+                    {
+                        loading && <div className='loading'><span>Loading</span></div>
+                    }
+
                 </div>
             </div>
         </div>
