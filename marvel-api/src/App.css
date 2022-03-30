@@ -72,7 +72,10 @@ body{
   height: 324px;
   object-fit: cover;
 }
-
+.card img {
+  width: 216px;
+  height: 324px;
+}
 #btn-area{
   width: 1180px;
   margin: auto;
@@ -108,6 +111,20 @@ i{
 
 }
 
+.loading{
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0,0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loading span{
+  background-color: red;
+  color: white;
+  padding: 0.5rem 1rem;
+}
 
 /* view on phone */
 @media screen and (max-width : 576px){

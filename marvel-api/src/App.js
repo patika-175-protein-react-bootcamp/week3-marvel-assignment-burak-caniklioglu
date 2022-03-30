@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 
 import React, {useState, useEffect} from 'react';
 import './App.css';
@@ -10,32 +11,82 @@ function App() {
 
     const [card, setCard] = useState([]);
 
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
 
-    const [skip, setSkip] = useState(0);
+    const [offset, setOffset] = useState(0);
+
+    const [offsets, setOffsets] = useState([]);
+
+    const [btns, setBtns] = useState([]);
+
+    
 
     useEffect(() => {
+        const getData = async () => {
+            let totalBtns = [];
+            let getCards = sessionStorage.getItem('cards');
+            let getOffsets = sessionStorage.getItem('offsets');
+
+            if(getOffsets){
+                getOffsets = JSON.parse(getOffsets);
+                if(getOffsets.includes(offset)){
+                    setCard(JSON.parse(getCards).slice(offset*12, (offset+1)*12));
+                }else{
+                    
+                    setLoading(true);
+                    getCards = JSON.parse(getCards);
+                    const response = await axios.get(`http://gateway.marvel.com/v1/public/characters?limit=12&offset=${offset * 12}&ts=1&apikey=75ff82aee4aef7e1bdb522eea36271d4&hash=${hash}`);
+                    const data = response.data.data.results;
+
+                    getCards = getCards.concat(data);
+                    sessionStorage.setItem('cards', JSON.stringify(getCards));
+
+
+                    setCard(data);
+                    getOffsets.push(offset);
+                    sessionStorage.setItem('offsets', JSON.stringify(getOffsets));
+
+                    
+                    
+                    setLoading(false);
+                }
+            }else{
+                const response = await axios.get(`http://gateway.marvel.com/v1/public/characters?limit=12&offset=${offset * 12}&ts=1&apikey=75ff82aee4aef7e1bdb522eea36271d4&hash=${hash}`);
+                const data = response.data.data.results;
+                const total = response.data.data.total;
+
+                for(let i = 1; i <= Math.ceil(total/12); i++){
+                    setBtns([...btns, i]);
+                } 
+                console.log(btns)  ;
+                setCard(data);
+                sessionStorage.setItem('cards', JSON.stringify(data));
+                offsets.push(offset);
+                sessionStorage.setItem('offsets', JSON.stringify(offsets));
+                setLoading(false);
+            }
+        };
         getData();
-        setLoading(false);
-    } , [skip]);
+    } , [offset]);
 
-    const getData = async () => {
-        try {
-            const response = await axios.get(`http://gateway.marvel.com/v1/public/characters?limit=20&offset=${skip * 20}&ts=1&apikey=75ff82aee4aef7e1bdb522eea36271d4&hash=${hash}`);
-            console.log(response.data.data.results);
-            setCard(response.data.data.results);
-        } catch (error) {
-            console.log(error);
-        }
+    
+       
+    const oldData = () => {
+        offset > 0 && setOffset(offset - 1);
+        
     };
-
     const newData = () => {
-        setSkip(x => x + 1);
+        setOffset(offset +1 );
     };
 
+
+    
 
     return (
         <div className="App">
+            {
+                loading && <div className='loading'><span>Loading</span></div>
+            }
             <div className='logo-all'>
                 <div id='logo-image'>
                     <img src={first_image} alt="main img" />
@@ -66,6 +117,8 @@ function App() {
                 </div>
             </div>
 
+            <button onClick={oldData}>Eski Datayı çek</button>
+            <button onClick={newData}>Data Çek</button>
             <div id='image-area'>
                 <div className="container">
 
@@ -77,19 +130,42 @@ function App() {
                                 <div className="cards" key={item.id}>
                                     <div className="card-container">
                                         <div className="card">
-                                            <img src={item.thumbnail.path + '/portrait_incredible.' + item.thumbnail.extension} alt={item.name}/>
+                                            <img src={
+                                                `${item.thumbnail.path}.${item.thumbnail.extension}` ===
+                        'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg'
+                                                    ? 'https://play-lh.googleusercontent.com/_6tffbWu8_-pzpMwDgsae41KF-GYec4Uzuvf7-6lS0j67rSqLKZkA8RIhM8v1I4n5w'
+                                                    : `${item.thumbnail.path}.${item.thumbnail.extension}`
+                                            } alt={item.name}/>
                                         </div>
                                     </div>
                                     <p>{item.name}</p>
                                 </div>
                             );})
                     }
+                    
+                    
 
-                    <button onClick={newData}>Data Çek</button>
+                </div>
+            </div>
+
+            <div id="btn-area">
+                <div id="btns">
                     {
-                        loading && <div className='loading'><span>Loading</span></div>
+                        btns.map((item) => {
+                            return (
+                                <div key={item} className="btn" >{item}</div>
+                            );
+                        })
                     }
-
+                    {/* <div className="btn btn-1">&#60;</div>
+                    <div className="btn btn-2">1</div>
+                    <div className="btn btn-3">...</div>
+                    <div className="btn btn-4">99</div>
+                    <div className="btn btn-5">100</div>
+                    <div className="btn btn-6">101</div>
+                    <div className="btn btn-7">...</div>
+                    <div className="btn btn-8">200</div>
+                    <div className="btn btn-9">&gt;</div> */}
                 </div>
             </div>
         </div>
