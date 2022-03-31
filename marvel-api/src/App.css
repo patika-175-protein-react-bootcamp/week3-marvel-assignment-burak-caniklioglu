@@ -103,7 +103,7 @@ i{
   cursor: pointer;
 }
 
-.btn-5{
+.active{
   background-color: gray;
   padding: 0.8rem 1.2rem;
   color: #222222;

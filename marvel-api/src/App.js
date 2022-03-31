@@ -17,20 +17,21 @@ function App() {
 
     const [offsets, setOffsets] = useState([]);
 
-    const [btns, setBtns] = useState([]);
+    const [totalPage, setTotalPage] = useState([]);
+
 
     
 
     useEffect(() => {
         const getData = async () => {
-            let totalBtns = [];
+            
             let getCards = sessionStorage.getItem('cards');
             let getOffsets = sessionStorage.getItem('offsets');
 
             if(getOffsets){
                 getOffsets = JSON.parse(getOffsets);
                 if(getOffsets.includes(offset)){
-                    setCard(JSON.parse(getCards).slice(offset*12, (offset+1)*12));
+                    setCard(JSON.parse(getCards).slice(getOffsets.indexOf(offset)*12, (getOffsets.indexOf(offset)+1)*12));
                 }else{
                     
                     setLoading(true);
@@ -55,10 +56,12 @@ function App() {
                 const data = response.data.data.results;
                 const total = response.data.data.total;
 
-                for(let i = 1; i <= Math.ceil(total/12); i++){
-                    setBtns([...btns, i]);
-                } 
-                console.log(btns)  ;
+                
+                const totalpage = Math.ceil(total/12);
+                for(let i=0; i<totalpage; i++){
+                    totalPage.push(i);
+                }
+                setTotalPage(totalPage);
                 setCard(data);
                 sessionStorage.setItem('cards', JSON.stringify(data));
                 offsets.push(offset);
@@ -69,6 +72,23 @@ function App() {
         getData();
     } , [offset]);
 
+    const oneToFive = totalPage.slice(0,4).map((item, index) => {
+        return <div className={offset === item ? 'btn active' : 'btn'} onClick={() => setOffset(item)} key={index}>
+            {item + 1}
+        </div>;
+    });
+
+    const sixTo126 = totalPage.slice(offset-1,offset+2).map((item, index) => {
+        return <div className={offset === item ? 'btn active' : 'btn'} onClick={() => setOffset(item)} key={index}>
+            {item + 1}
+        </div>;
+    });
+
+    const last = totalPage.slice(totalPage.length-4,totalPage.length).map((item, index) => {
+        return <div className={offset === item ? 'btn active' : 'btn'} onClick={() => setOffset(item)} key={index}>
+            {item + 1}
+        </div>;
+    });
     
        
     const oldData = () => {
@@ -117,8 +137,7 @@ function App() {
                 </div>
             </div>
 
-            <button onClick={oldData}>Eski Datayı çek</button>
-            <button onClick={newData}>Data Çek</button>
+            
             <div id='image-area'>
                 <div className="container">
 
@@ -149,24 +168,56 @@ function App() {
             </div>
 
             <div id="btn-area">
-                <div id="btns">
-                    {
-                        btns.map((item) => {
-                            return (
-                                <div key={item} className="btn" >{item}</div>
-                            );
-                        })
-                    }
-                    {/* <div className="btn btn-1">&#60;</div>
-                    <div className="btn btn-2">1</div>
-                    <div className="btn btn-3">...</div>
-                    <div className="btn btn-4">99</div>
-                    <div className="btn btn-5">100</div>
-                    <div className="btn btn-6">101</div>
-                    <div className="btn btn-7">...</div>
-                    <div className="btn btn-8">200</div>
-                    <div className="btn btn-9">&gt;</div> */}
-                </div>
+                
+                {
+                    offset <3 &&
+                        <div id="btns">
+                            {oneToFive}
+                            <div className="btn" onClick={() => setOffset(Math.trunc((offset + totalPage.slice(-1)[0]) / 2))}>...</div>
+                            <div className="btn" onClick={() => setOffset(totalPage.slice(-1)[0])}>{totalPage.slice(-1)[0]+1}</div>  
+                            <div className="btn icon" onClick={newData}>&gt;</div>                 
+                        </div>
+                        
+                }
+                {
+                    offset === 3 &&
+                    <div id="btns">
+                        {oneToFive}
+                        <div className="btn" onClick={newData}>5</div>
+                        <div className="btn"onClick={() => setOffset(Math.trunc((offset + totalPage.slice(-1)[0]) / 2))}>...</div>
+                        <div className="btn"onClick={() => setOffset(totalPage.slice(-1)[0])}>{totalPage.slice(-1)[0]+1}</div>  
+                        <div className="btn icon" onClick={newData}>&gt;</div>                 
+                    </div>
+
+                }
+
+                {
+                    offset > 3 && offset < 126 &&
+                    <div id="btns">
+                        <div className="btn icon" onClick={oldData}>&#60;</div>
+                        <div className="btn" onClick={() => setOffset(totalPage.slice(1)[0]-1)}>{totalPage.slice(1)[0]}</div> 
+                        <div className="btn btn-3"onClick={() => setOffset(Math.trunc((offset + totalPage.slice(1)[0]) / 2))}>...</div>
+                        {sixTo126}
+                        <div className="btn"onClick={() => setOffset(Math.trunc((offset + totalPage.slice(-1)[0]) / 2))}>...</div>
+                        <div className="btn"onClick={() => setOffset(totalPage.slice(-1)[0])}>{totalPage.slice(-1)[0]+1}</div>  
+                        <div className="btn" onClick={newData}>&gt;</div>                   
+                    </div>
+                }
+
+                {
+                    offset >=126 &&
+                    <div id="btns">
+                        <div className="btn  icon" onClick={oldData}>&#60;</div>
+                        <div className="btn btn-3"onClick={() => setOffset(Math.trunc((offset + totalPage.slice(1)[0]) / 2))}>...</div>
+                        <div className="btn" onClick={()=>(setOffset(125))}>126</div>
+                        {last}
+                        
+                    </div>
+                }
+
+                
+                
+                
             </div>
         </div>
     );
