@@ -84,9 +84,7 @@ body{
   font-size: 18px;
 }
 
-i{
-  font-size: 36px;
-}
+
 #btns{
   float: right;
   font-weight: 600;
@@ -145,7 +143,7 @@ i{
       margin: auto;
       font-size: 12px;
   }
-  .btn-2,.btn-3,.btn-7,.btn-8{
+  .three-dot,.last,.first{
       display: none;
   } 
   #btns{

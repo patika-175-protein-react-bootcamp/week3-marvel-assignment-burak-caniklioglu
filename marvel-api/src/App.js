@@ -27,8 +27,18 @@ function App() {
             
             let getCards = sessionStorage.getItem('cards');
             let getOffsets = sessionStorage.getItem('offsets');
+            let total = sessionStorage.getItem('total');
 
             if(getOffsets){
+                
+                if(total){
+                    setTotalPage([]);
+                    for(let i=0; i<total; i++){
+                        totalPage.push(i);
+                    }
+                    setTotalPage(totalPage);
+                }
+
                 getOffsets = JSON.parse(getOffsets);
                 if(getOffsets.includes(offset)){
                     setCard(JSON.parse(getCards).slice(getOffsets.indexOf(offset)*12, (getOffsets.indexOf(offset)+1)*12));
@@ -41,8 +51,6 @@ function App() {
 
                     getCards = getCards.concat(data);
                     sessionStorage.setItem('cards', JSON.stringify(getCards));
-
-
                     setCard(data);
                     getOffsets.push(offset);
                     sessionStorage.setItem('offsets', JSON.stringify(getOffsets));
@@ -58,6 +66,7 @@ function App() {
 
                 
                 const totalpage = Math.ceil(total/12);
+                sessionStorage.setItem('total', JSON.stringify(totalpage));
                 for(let i=0; i<totalpage; i++){
                     totalPage.push(i);
                 }
@@ -71,6 +80,12 @@ function App() {
         };
         getData();
     } , [offset]);
+    
+    
+    
+    
+    
+    
 
     const oneToFive = totalPage.slice(0,4).map((item, index) => {
         return <div className={offset === item ? 'btn active' : 'btn'} onClick={() => setOffset(item)} key={index}>
@@ -173,8 +188,8 @@ function App() {
                     offset <3 &&
                         <div id="btns">
                             {oneToFive}
-                            <div className="btn" onClick={() => setOffset(Math.trunc((offset + totalPage.slice(-1)[0]) / 2))}>...</div>
-                            <div className="btn" onClick={() => setOffset(totalPage.slice(-1)[0])}>{totalPage.slice(-1)[0]+1}</div>  
+                            <div className="btn three-dot" onClick={() => setOffset(Math.trunc((offset + totalPage.slice(-1)[0]) / 2))}>...</div>
+                            <div className="btn last" onClick={() => setOffset(totalPage.slice(-1)[0])}>{totalPage.slice(-1)[0]+1}</div>  
                             <div className="btn icon" onClick={newData}>&gt;</div>                 
                         </div>
                         
@@ -183,9 +198,9 @@ function App() {
                     offset === 3 &&
                     <div id="btns">
                         {oneToFive}
-                        <div className="btn" onClick={newData}>5</div>
-                        <div className="btn"onClick={() => setOffset(Math.trunc((offset + totalPage.slice(-1)[0]) / 2))}>...</div>
-                        <div className="btn"onClick={() => setOffset(totalPage.slice(-1)[0])}>{totalPage.slice(-1)[0]+1}</div>  
+                        <div className="btn five" onClick={newData}>5</div>
+                        <div className="btn three-dot"onClick={() => setOffset(Math.trunc((offset + totalPage.slice(-1)[0]) / 2))}>...</div>
+                        <div className="btn last"onClick={() => setOffset(totalPage.slice(-1)[0])}>{totalPage.slice(-1)[0]+1}</div>  
                         <div className="btn icon" onClick={newData}>&gt;</div>                 
                     </div>
 
@@ -195,12 +210,12 @@ function App() {
                     offset > 3 && offset < 126 &&
                     <div id="btns">
                         <div className="btn icon" onClick={oldData}>&#60;</div>
-                        <div className="btn" onClick={() => setOffset(totalPage.slice(1)[0]-1)}>{totalPage.slice(1)[0]}</div> 
-                        <div className="btn btn-3"onClick={() => setOffset(Math.trunc((offset + totalPage.slice(1)[0]) / 2))}>...</div>
+                        <div className="btn first" onClick={() => setOffset(totalPage.slice(1)[0]-1)}>{totalPage.slice(1)[0]}</div> 
+                        <div className="btn three-dot"onClick={() => setOffset(Math.trunc((offset + totalPage.slice(1)[0]) / 2))}>...</div>
                         {sixTo126}
-                        <div className="btn"onClick={() => setOffset(Math.trunc((offset + totalPage.slice(-1)[0]) / 2))}>...</div>
-                        <div className="btn"onClick={() => setOffset(totalPage.slice(-1)[0])}>{totalPage.slice(-1)[0]+1}</div>  
-                        <div className="btn" onClick={newData}>&gt;</div>                   
+                        <div className="btn three-dot"onClick={() => setOffset(Math.trunc((offset + totalPage.slice(-1)[0]) / 2))}>...</div>
+                        <div className="btn last"onClick={() => setOffset(totalPage.slice(-1)[0])}>{totalPage.slice(-1)[0]+1}</div>  
+                        <div className="btn icon" onClick={newData}>&gt;</div>                   
                     </div>
                 }
 
@@ -208,8 +223,9 @@ function App() {
                     offset >=126 &&
                     <div id="btns">
                         <div className="btn  icon" onClick={oldData}>&#60;</div>
-                        <div className="btn btn-3"onClick={() => setOffset(Math.trunc((offset + totalPage.slice(1)[0]) / 2))}>...</div>
-                        <div className="btn" onClick={()=>(setOffset(125))}>126</div>
+                        <div className="btn first" onClick={() => setOffset(totalPage.slice(1)[0]-1)}>{totalPage.slice(1)[0]}</div> 
+                        <div className="btn three-dot"onClick={() => setOffset(Math.trunc((offset + totalPage.slice(1)[0]) / 2))}>...</div>
+                        <div className="btn one-two-six" onClick={()=>(setOffset(125))}>126</div>
                         {last}
                         
                     </div>
