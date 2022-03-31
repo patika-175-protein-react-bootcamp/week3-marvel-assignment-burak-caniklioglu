@@ -23,60 +23,66 @@ function App() {
     
 
     useEffect(() => {
+        
         const getData = async () => {
             
-            let getCards = sessionStorage.getItem('cards');
-            let getOffsets = sessionStorage.getItem('offsets');
-            let total = sessionStorage.getItem('total');
+            try {
+                let getCards = sessionStorage.getItem('cards');
+                let getOffsets = sessionStorage.getItem('offsets');
+                let total = sessionStorage.getItem('total');
 
-            if(getOffsets){
+                if(getOffsets){
                 
-                if(total){
-                    setTotalPage([]);
-                    for(let i=0; i<total; i++){
+                    if(total){
+                        setTotalPage([]);
+                        for(let i=0; i<total; i++){
+                            totalPage.push(i);
+                        }
+                        setTotalPage(totalPage);
+                    }
+
+                    getOffsets = JSON.parse(getOffsets);
+                    if(getOffsets.includes(offset)){
+                        setCard(JSON.parse(getCards).slice(getOffsets.indexOf(offset)*12, (getOffsets.indexOf(offset)+1)*12));
+                    }else{
+                    
+                        setLoading(true);
+                        getCards = JSON.parse(getCards);
+                        const response = await axios.get(`http://gateway.marvel.com/v1/public/characters?limit=12&offset=${offset * 12}&ts=1&apikey=75ff82aee4aef7e1bdb522eea36271d4&hash=${hash}`);
+                        const data = response.data.data.results;
+
+                        getCards = getCards.concat(data);
+                        sessionStorage.setItem('cards', JSON.stringify(getCards));
+                        setCard(data);
+                        getOffsets.push(offset);
+                        sessionStorage.setItem('offsets', JSON.stringify(getOffsets));
+
+                    
+                    
+                        setLoading(false);
+                    }
+                }else{
+                    const response = await axios.get(`http://gateway.marvel.com/v1/public/characters?limit=12&offset=${offset * 12}&ts=1&apikey=75ff82aee4aef7e1bdb522eea36271d4&hash=${hash}`);
+                    const data = response.data.data.results;
+                    const total = response.data.data.total;
+
+                
+                    const totalpage = Math.ceil(total/12);
+                    sessionStorage.setItem('total', JSON.stringify(totalpage));
+                    for(let i=0; i<totalpage; i++){
                         totalPage.push(i);
                     }
                     setTotalPage(totalPage);
-                }
-
-                getOffsets = JSON.parse(getOffsets);
-                if(getOffsets.includes(offset)){
-                    setCard(JSON.parse(getCards).slice(getOffsets.indexOf(offset)*12, (getOffsets.indexOf(offset)+1)*12));
-                }else{
-                    
-                    setLoading(true);
-                    getCards = JSON.parse(getCards);
-                    const response = await axios.get(`http://gateway.marvel.com/v1/public/characters?limit=12&offset=${offset * 12}&ts=1&apikey=75ff82aee4aef7e1bdb522eea36271d4&hash=${hash}`);
-                    const data = response.data.data.results;
-
-                    getCards = getCards.concat(data);
-                    sessionStorage.setItem('cards', JSON.stringify(getCards));
                     setCard(data);
-                    getOffsets.push(offset);
-                    sessionStorage.setItem('offsets', JSON.stringify(getOffsets));
-
-                    
-                    
+                    sessionStorage.setItem('cards', JSON.stringify(data));
+                    offsets.push(offset);
+                    sessionStorage.setItem('offsets', JSON.stringify(offsets));
                     setLoading(false);
                 }
-            }else{
-                const response = await axios.get(`http://gateway.marvel.com/v1/public/characters?limit=12&offset=${offset * 12}&ts=1&apikey=75ff82aee4aef7e1bdb522eea36271d4&hash=${hash}`);
-                const data = response.data.data.results;
-                const total = response.data.data.total;
-
-                
-                const totalpage = Math.ceil(total/12);
-                sessionStorage.setItem('total', JSON.stringify(totalpage));
-                for(let i=0; i<totalpage; i++){
-                    totalPage.push(i);
-                }
-                setTotalPage(totalPage);
-                setCard(data);
-                sessionStorage.setItem('cards', JSON.stringify(data));
-                offsets.push(offset);
-                sessionStorage.setItem('offsets', JSON.stringify(offsets));
-                setLoading(false);
+            } catch (error) {
+                console.log(error);
             }
+            
         };
         getData();
     } , [offset]);
