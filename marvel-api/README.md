@@ -1,3 +1,5 @@
+## Survey Form
+<a href="https://burakcnk-marvel-api.netlify.app/" target="_blank"><img src="./ezgif.com-gif-maker.gif" width = "100%"></a>
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
