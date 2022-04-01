@@ -31,21 +31,24 @@ function App() {
                 let getOffsets = sessionStorage.getItem('offsets');
                 let total = sessionStorage.getItem('total');
 
+                // eğer sessionStorage'da değer varsa
                 if(getOffsets){
                 
                     if(total){
+                        // eğer toplam sayfa sayısı sessionStorage'da değer varsa bu bize sayfa yenilendiğinde lazım oluyor
                         setTotalPage([]);
                         for(let i=0; i<total; i++){
                             totalPage.push(i);
                         }
                         setTotalPage(totalPage);
                     }
-
+                    
                     getOffsets = JSON.parse(getOffsets);
+                    // eğer sessionStorage'da daha onceden goruntulenen bir  değer varsa
                     if(getOffsets.includes(offset)){
                         setCard(JSON.parse(getCards).slice(getOffsets.indexOf(offset)*12, (getOffsets.indexOf(offset)+1)*12));
                     }else{
-                    
+                    // eğer sessionStorage'da daha onceden goruntulenen bir  değer yoksa
                         setLoading(true);
                         getCards = JSON.parse(getCards);
                         const response = await axios.get(`https://gateway.marvel.com/v1/public/characters?limit=12&offset=${offset * 12}&ts=1&apikey=75ff82aee4aef7e1bdb522eea36271d4&hash=${hash}`);
@@ -62,6 +65,7 @@ function App() {
                         setLoading(false);
                     }
                 }else{
+                    // eğer sessionStorage'da değer yoksa
                     const response = await axios.get(`https://gateway.marvel.com/v1/public/characters?limit=12&offset=${offset * 12}&ts=1&apikey=75ff82aee4aef7e1bdb522eea36271d4&hash=${hash}`);
                     const data = response.data.data.results;
                     const total = response.data.data.total;
@@ -92,7 +96,7 @@ function App() {
     
     
     
-
+    //pagination için farklı tasarımlar
     const oneToFive = totalPage.slice(0,4).map((item, index) => {
         return <div className={offset === item ? 'btn active' : 'btn'} onClick={() => setOffset(item)} key={index}>
             {item + 1}
@@ -111,7 +115,7 @@ function App() {
         </div>;
     });
     
-       
+    // ok işaretleri ile sayfa gösterimleri
     const oldData = () => {
         offset > 0 && setOffset(offset - 1);
         
