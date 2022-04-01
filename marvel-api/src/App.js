@@ -48,7 +48,7 @@ function App() {
                     
                         setLoading(true);
                         getCards = JSON.parse(getCards);
-                        const response = await axios.get(`http://gateway.marvel.com/v1/public/characters?limit=12&offset=${offset * 12}&ts=1&apikey=75ff82aee4aef7e1bdb522eea36271d4&hash=${hash}`);
+                        const response = await axios.get(`https://gateway.marvel.com/v1/public/characters?limit=12&offset=${offset * 12}&ts=1&apikey=75ff82aee4aef7e1bdb522eea36271d4&hash=${hash}`);
                         const data = response.data.data.results;
 
                         getCards = getCards.concat(data);
@@ -62,7 +62,7 @@ function App() {
                         setLoading(false);
                     }
                 }else{
-                    const response = await axios.get(`http://gateway.marvel.com/v1/public/characters?limit=12&offset=${offset * 12}&ts=1&apikey=75ff82aee4aef7e1bdb522eea36271d4&hash=${hash}`);
+                    const response = await axios.get(`https://gateway.marvel.com/v1/public/characters?limit=12&offset=${offset * 12}&ts=1&apikey=75ff82aee4aef7e1bdb522eea36271d4&hash=${hash}`);
                     const data = response.data.data.results;
                     const total = response.data.data.total;
 
